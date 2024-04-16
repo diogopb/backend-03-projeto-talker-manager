@@ -105,6 +105,24 @@ app.put('/talker/:id',
     }
   });
 
+app.delete('/talker/:id', validateToken, async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  try {
+    const talkers = await readJsonData(FILE_PATH);
+    const index = talkers.findIndex((talker) => talker.id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+    }
+
+    talkers.splice(index, 1);
+    await writeJsonData(FILE_PATH, talkers);
+    return res.status(204).json({ message: 'Pessoa palestrante deletada' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Erro ao deletar palestrante' });
+  }
+});
+
 app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });

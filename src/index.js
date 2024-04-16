@@ -36,6 +36,25 @@ app.get('/talker', async (req, res) => {
   return res.status(HTTP_OK_STATUS).json(speakers);
 });
 
+app.get('/talker/search', validateToken, async (req, res) => {
+  const { q } = req.query;
+  
+  try {
+    const talkers = await readJsonData(FILE_PATH);
+
+    if (!q) {
+      return res.status(HTTP_OK_STATUS).json(talkers);
+    }
+
+    const filteredTalkers = talkers
+      .filter((talker) => talker.name.toLowerCase().includes(q.toLowerCase()));
+
+    return res.status(HTTP_OK_STATUS).json(filteredTalkers);
+  } catch (error) {
+    return res.status(400).json({ message: 'Erro ao buscar palestrantes' });
+  }
+});
+
 app.get('/talker/:id', async (req, res) => {
   const id = parseInt(req.params.id, 10);
   try {
